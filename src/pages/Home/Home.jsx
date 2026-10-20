@@ -2,7 +2,7 @@ import bookCover from '../../assets/moby-dick.png'
 import styles from './Home.module.css'
 import BookCard from "../../components/BookCard/BookCard.jsx";
 import {useEffect, useState} from "react";
-import searchBooks from "../../api/search/book.js";
+import {searchBooks} from "../../api/search/book.js";
 
 export default function Home() {
 

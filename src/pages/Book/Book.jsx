@@ -1,16 +1,44 @@
 import bookCover from '../../assets/moby-dick.png'
 import styles from './Book.module.css'
-import {Link} from "react-router";
+import {Link, useParams} from "react-router";
+import {useEffect, useState} from "react";
+import {getBookById} from "../../api/search/book.js";
 
 export default function Book() {
+  const id = useParams().id;
+  const [img, setImg] = useState("");
+  const [name, setName] = useState("");
+  const [author, setAuthor] = useState("");
+  const [date, setDate] = useState("");
+  const [summary, setSummary] = useState("");
+  const [language, setLanguage] = useState("");
+  const [genre, setGenre] = useState("");
+
+  function UpdateBook(b){
+    setName(b.volumeInfo.title ?? "");
+    setAuthor(b.volumeInfo.authors ?? "");
+    setImg(b.volumeInfo.imageLinks?.thumbnail ?? null);
+    setDate(b.volumeInfo.publishedDate)
+    setSummary(b.volumeInfo.description)
+    setLanguage(b.volumeInfo.language)
+    setGenre(b.volumeInfo.categories)
+  }
+
+  useEffect(() => {
+    getBookById(id).then(book => {
+        UpdateBook(book);
+    });
+
+  })
+
   return (
     <main className={styles.page}>
       <article className={styles.bookDetail}>
         <div className={styles.bookSidebar}>
           <img
             className={styles.detailCover}
-            src={bookCover}
-            alt="Couverture du roman Moby-Dick"
+            src={img}
+            alt={"Couverture du roman "+ name}
             width="667"
             height="1000"
           />
@@ -39,12 +67,12 @@ export default function Book() {
           <nav className={styles.breadcrumb} aria-label="Fil d’Ariane">
             <ol>
               <li><Link to="/">Bibliothèque</Link></li>
-              <li aria-current="page">Moby-Dick</li>
+              <li aria-current="page">{name}</li>
             </ol>
           </nav>
 
-          <h1>Moby-<span>Dick</span></h1>
-          <p className={styles.detailAuthor}>Herman Melville</p>
+          <h1>{name}</h1>
+          <p className={styles.detailAuthor}>{author}</p>
 
           <dl className={styles.detailMetadata}>
             <div>
@@ -53,7 +81,7 @@ export default function Book() {
                 calendar_today
               </span><span className={styles.visuallyHidden}>Première publication</span>
               </dt>
-              <dd><time dateTime="1851">1851</time></dd>
+              <dd><time dateTime="1851">{date}</time></dd>
             </div>
             <div>
               <dt>
@@ -61,7 +89,7 @@ export default function Book() {
                 translate
               </span><span className={styles.visuallyHidden}>Langue originale</span>
               </dt>
-              <dd>Anglais</dd>
+              <dd>{language}</dd>
             </div>
             <div>
               <dt>
@@ -69,32 +97,15 @@ export default function Book() {
                 auto_stories
               </span><span className={styles.visuallyHidden}>Genre</span>
               </dt>
-              <dd>Aventure</dd>
+              <dd>{genre}</dd>
             </div>
           </dl>
 
           <section className={styles.bookSummary} id="resume">
-            <h2 className={styles.visuallyHidden}>Présentation du roman</h2>
-            <p>
-              Ismaël embarque à bord du Pequod, un navire baleinier commandé par
-              le capitaine Achab. Au fil de la traversée, il découvre la vie en
-              mer, le travail des marins et les liens qui unissent les membres
-              de cet équipage venu de tous horizons.
-            </p>
-            <p>
-              Mais Achab ne poursuit qu’un seul but : retrouver Moby Dick, le
-              cachalot blanc qui lui a arraché une jambe. Pour le capitaine,
-              cette chasse dépasse bientôt les limites d’une simple expédition.
-              Son obsession entraîne le navire et ses hommes dans une aventure
-              périlleuse.
-            </p>
-            <p>
-              Entre récit d’aventure et réflexion sur la condition humaine, le
-              roman explore la vengeance, la démesure et la relation entre
-              l’être humain et la nature. L’océan devient le théâtre d’un
-              affrontement où se mêlent fascination, peur et désir de tout
-              maîtriser.
-            </p>
+            <h2 className={styles.visuallyHidden}>Présentation</h2>
+            <div dangerouslySetInnerHTML={{ __html: summary }} />
+
+
           </section>
         </div>
       </article>
